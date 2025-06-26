@@ -1,8 +1,6 @@
-//typescriptreact type="react" project="Flood Catastrophe Insurance System" file="disaster-map.tsx"
-//[v0-no-op-code-block-prefix]
 "use client"
 
-import { useState, useEffect, use,useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -32,6 +30,8 @@ const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapCo
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false })
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false })
 const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false })
+// 新增：动态导入 WMSTileLayer 组件
+const WMSTileLayer = dynamic(() => import('react-leaflet').then(mod => mod.WMSTileLayer), { ssr: false });
 
 
 // Set up the default icon
@@ -118,7 +118,7 @@ export default function Component() {
   const [projectData, setProjectData] = useState<Project[]>([]);
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    // const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     import('leaflet').then((leaflet) => {
       setL(leaflet);
     });
@@ -362,99 +362,8 @@ export default function Component() {
   return (
     <div className="flex flex-col h-screen">
       <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <div className="w-1/4 p-4 bg-gray-100 overflow-auto flex flex-col">
-          <div className="space-y-4 flex-grow">
-            <div className="space-y-2">
-              <Label htmlFor="project-name">1. Project Name</Label>
-              <Input id="project-name" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="random-years">2. Number of Random Years</Label>
-              <Input id="random-years" type="number" value={randomYears} onChange={(e) => setRandomYears(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>3. Analysis Period</Label>
-              <div className="flex space-x-2">
-                <div className="flex-1">
-                  <Label htmlFor="start-time">Start Time</Label>
-                  <Input 
-                    id="start-time" 
-                    type="date" 
-                    value={startTime} 
-                    onChange={(e) => setStartTime(e.target.value)}
-                  />
-                </div>
-                <div className="flex-1">
-                  <Label htmlFor="end-time">End Time</Label>
-                  <Input 
-                    id="end-time" 
-                    type="date" 
-                    value={endTime} 
-                    onChange={(e) => setEndTime(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              {/* <Label>4. Output Granularity</Label> */}
-              {/* <Select onValueChange={setOutputGranularity}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select granularity" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="daily">Daily</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="yearly">Yearly</SelectItem>
-                </SelectContent>
-              </Select> */}
-              <Label>4. User Name</Label>
-              <Input id="project-name" value={userName} onChange={(e) => setUserName(e.target.value)} />
 
-            </div>
-            <div className="space-y-2">
-              <Label>5. Results</Label>
-              <div className="space-y-1">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="annualTotalLoss" checked={annualTotalLoss === "1"} onCheckedChange={(checked) => setAnnualTotalLoss(checked ? "1" : "0")} />
-                  <label htmlFor="annualTotalLoss">Annual Total Loss</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="annualMaxLoss" checked={annualMaxLoss === "1"} onCheckedChange={(checked) => setAnnualMaxLoss(checked ? "1" : "0")} />
-                  <label htmlFor="annualMaxLoss">Annual Maximum Loss</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="lossPreciseEvent" checked={lossPreciseEvent === "1"} onCheckedChange={(checked) => setLossPreciseEvent(checked ? "1" : "0")} />
-                  <label htmlFor="lossPreciseEvent">Event Loss</label>
-                </div>
-              </div>
-            </div>
-            <div className="mt-8">
-              <h2 className="text-lg font-semibold mb-4">File Upload</h2>
-              <Input
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                className="mb-2"
-                placeholder="Choose file"
-              />
-              {/* <Button className="w-full">
-                <Upload className="mr-2 h-4 w-4" /> Upload File
-              </Button> */}
-            </div>
-            <div className="flex space-x-2 mt-4">
-              {/* <Button variant="outline" onClick={handleCancel}>Cancel</Button> */}
-              <Button onClick={handleSubmit}>Submit</Button>
-            </div>
-
-            {/* <Button onClick={() => handleDownload(userName, projectName)}>
-              <Download className="mr-2 h-4 w-4" /> Download Project Result
-            </Button> */}
-          </div>
-        </div>
-        <div className="w-3/4 p-4 space-y-8 overflow-auto">
-          <Card>
+      <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Distribution of Insured Properties</CardTitle>
               <div className="relative w-64">
@@ -468,17 +377,33 @@ export default function Component() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="h-[500px] w-full rounded-lg overflow-hidden">
+              <div className="h-[1000px] w-full rounded-lg overflow-hidden">
                 <MapContainer
                   ref={mapRef}
                   center={[22.3193, 114.1694]}
                   zoom={11}
                   style={{ height: "100%", width: "100%" }}
                 >
+                  {/* 底图图层 */}
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
+                  
+                  {/* --- 新增：GeoServer WMS 图层 --- */}
+                  {/* 请将下面的 url 和 layers 替换为您自己的 GeoServer 服务信息 */}
+                  <WMSTileLayer
+                    url="http://143.89.22.7:8090/geoserver/wms" // 示例 URL，请替换成您的 GeoServer WMS 服务地址. [7]
+                    params={{
+                      layers: '	COP:Flood_Depth _Return_Period_500yr', // 请替换成您的 "工作区:图层名". [2]
+                      format: 'image/png', // 请求的图片格式. [2]
+                      transparent: true, // 设置为 true 使图层背景透明. [2]
+                      version: '1.1.0' // WMS 版本号. [7]
+                    }}
+                    attribution="Your GeoServer Data" // 可选的图层版权信息
+                  />
+                  {/* --- WMS 图层结束 --- */}
+
                   <Marker position={[22.3193, 114.1694]}>
                     <Popup>Central District - High Risk Zone</Popup>
                   </Marker>
@@ -493,82 +418,6 @@ export default function Component() {
             </CardContent>
           </Card>
 
-          <Card>
-
-          <div className="flex justify-between items-center px-4 py-2">
-          <CardHeader >
-            <CardTitle>Project List</CardTitle>
-          </CardHeader>
-          <Button onClick={() => handleDownload(userName, projectName)} className="flex items-center">
-              <Download className="mr-2 h-4 w-4" /> Download Project Result
-          </Button>
-          </div>
-
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Project ID</TableHead>
-                    <TableHead className="text-xs">User Name</TableHead>
-                    <TableHead className="text-xs">Start Time</TableHead>
-                    <TableHead className="text-xs">End Time</TableHead>
-                    <TableHead className="text-xs">No. of Years</TableHead>
-                    <TableHead className="text-xs">Annual Total Loss</TableHead>
-                    <TableHead className="text-xs">Standard Deviation</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                    
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {projectData.map((project) => (
-                    <TableRow
-                    key={project.id}
-                    onClick={() => handleRowClick(project)}
-                    style={{
-                      backgroundColor: selectedProjectId === project.id ? 'lightblue' : 'transparent',
-                    }}
-                  >
-                      <TableCell>{project.id}</TableCell>
-                      <TableCell>{project.userName}</TableCell>
-                      <TableCell>{project.startTime}</TableCell>
-                      <TableCell>{project.endTime}</TableCell>
-                      <TableCell>{project.years}</TableCell>
-                      <TableCell>{(project.annualTotalLoss).toFixed(2)}</TableCell>
-                      <TableCell>{(project.standDerivation).toFixed(2)}</TableCell>
-                      <ProjectStatusCell project={project} />
-                    </TableRow>
-                  ))}
-                  
-                </TableBody>
-              </Table>
-              <div className="flex justify-between items-center mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm">Page {currentPage} of {totalPages}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="text-right text-sm text-gray-500">
-            {/* Current Time: {currentTime.toLocaleString()} */}
-            Current Time: 
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
