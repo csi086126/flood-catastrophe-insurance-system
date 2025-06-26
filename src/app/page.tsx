@@ -1,101 +1,607 @@
-import Image from "next/image";
+//typescriptreact type="react" project="Flood Catastrophe Insurance System" file="disaster-map.tsx"
+//[v0-no-op-code-block-prefix]
+"use client"
 
-export default function Home() {
+import { useState, useEffect, use,useRef } from 'react'
+import Image from 'next/image'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { CalendarIcon, Search, Upload, ChevronLeft, ChevronRight } from 'lucide-react'
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import axios from 'axios'
+import dynamic from 'next/dynamic'
+import "leaflet/dist/leaflet.css"
+import { Download } from 'lucide-react'
+import ProjectStatusCell from './ProjectStatusCell'
+import JSZip from 'jszip';
+import shp from 'shpjs';
+import proj4 from 'proj4';
+// import L from 'leaflet'
+
+// 动态导入 MapContainer 组件，并禁用 SSR
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false })
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false })
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false })
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false })
+
+
+// Set up the default icon
+// L.Icon.Default.mergeOptions({
+//   iconRetinaUrl: '/images/marker-icon-2x.png',
+//   iconUrl: '/images/marker-icon.png',
+//   shadowUrl: '/images/marker-shadow.png',
+// });
+
+var tempuserName = "none";
+var tempprojectName = "none";
+
+
+// const projectData = [
+//   {
+//     id: "PROJ-001",
+//     userName: "Michael",
+//     startTime: "2022-01-01",
+//     endTime: "2022-12-31",
+//     years: 100,
+//     annualTotalLoss: 500.25,
+//     standDerivation: 10.25,
+//     status: "Completed",
+//   },
+//   {
+//     id: "PROJ-002",
+//     userName: "John",
+//     startTime: "2021-01-01",
+//     endTime: "2021-12-31",
+//     years: 1000,
+//     annualTotalLoss: 750.50,
+//     standDerivation: 7.3,
+//     status: "Completed",
+//   },
+//   {
+//     id: "PROJ-003",
+//     userName: "Chan",
+//     startTime: "2020-01-01",
+//     endTime: "2020-12-31",
+//     years: 10000,
+//     annualTotalLoss: 1000.75,
+//     standDerivation: 5.5,
+//     status: "Completed",
+//   },
+// ];
+
+const Header = () => {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <header className="bg-white shadow-md">
+      <div className=" mx-auto px-4 py-2 flex justify-between items-center ml-2">
+        <div className="flex items-center">
+          <Image
+            src="/taipinglogo.png"
+            alt="China Taiping Logo"
+            width={180}
+            height={40}
+          />
+          <span className="ml-2 text-xl font-semibold">Flood Catastrophe Insurance System</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <nav className="flex-grow flex justify-end">
+          <ul className="flex space-x-4">
+            <li><Button variant="ghost">Home</Button></li>
+            <li><Button variant="ghost">Risk Analysis</Button></li>
+            <li className="ml-auto"><Button variant="ghost">Risk Statistics</Button></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+  )
+}
+
+export default function Component() {
+  const [projectName, setProjectName] = useState("")
+  const [userName, setUserName] = useState("")
+  const [randomYears, setRandomYears] = useState("1")
+  const [startTime, setStartTime] = useState("")
+  const [endTime, setEndTime] = useState("")
+  const [outputGranularity, setOutputGranularity] = useState("")
+  const [annualTotalLoss, setAnnualTotalLoss] = useState("1")
+  const [annualMaxLoss, setAnnualMaxLoss] = useState("0")
+  const [lossPreciseEvent, setLossPreciseEvent] = useState("0")
+  const [eventName, setEventName] = useState("")
+  const [affectedArea, setAffectedArea] = useState("")
+  const [date, setDate] = useState<Date>()
+  const [latitude, setLatitude] = useState("")
+  const [longitude, setLongitude] = useState("")
+  const [eventType, setEventType] = useState("")
+  const [analysisMode, setAnalysisMode] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const [currentPage, setCurrentPage] = useState(1)
+  const totalPages = 1
+  const mapRef = useRef(null);
+  const [L, setL] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  var file: File | undefined = undefined;
+  interface Project {
+    id: string;
+    userName: string;
+    startTime: string;
+    endTime: string;
+    years: number;
+    annualTotalLoss: number;
+    standDerivation: number;
+    status: string;
+  }
+  
+  const [projectData, setProjectData] = useState<Project[]>([]);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    import('leaflet').then((leaflet) => {
+      setL(leaflet);
+    });
+    import('proj4leaflet');
+
+    // 页面加载时从后端获取表格数据
+    axios.get('http://143.89.22.7:3001/api/projectData')
+    .then(response => {
+      setProjectData(response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching project data:', error);
+    });
+
+    return () => clearInterval(timer)
+  }, [])
+
+  const handleSubmit  = async () => {
+    if (file ) {
+      console.log(`File uploaded: ${file.name}`)
+      // Here you would handle the file upload logic
+      const formData = new FormData()
+      formData.append('file', file)
+
+      // alert('File uploaded successfully')
+      
+      try {
+        const response = axios.post('http://143.89.22.7:3001/api/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        console.log('File uploaded successfully', response.data)
+      } catch (error) {
+        console.error('Error uploading file', error)
+      }
+    }
+
+
+
+
+    //--user_name user1 --project_description "This is a demo project" --property_file input_table.csv --num_random_samples 10000
+    const pycmd = '--project_id '+projectName+' --user_name '+userName+' --project_description demofile --property_file input_table.csv --num_random_samples '+randomYears.toString()
+    // axios.post('http://localhost:3001/api/submit', { data: pycmd })
+
+    projectData.push({
+      id: projectName,
+      userName: userName,
+      startTime: startTime,
+      endTime: endTime,
+      years: Number(randomYears),
+      annualTotalLoss: 0.0,
+      standDerivation: 0.0,
+      status: "Loading",
+    })
+
+    alert('Project submitted successfully. The backend is processing the results.')
+
+
+    const response = await axios.post('http://143.89.22.7:3001/api/submit', { data: pycmd })
+    .then(response => {
+      console.log('Data submitted successfully', response.data)
+    })
+    .catch(error => {
+      console.error('Error submitting data', error)
+    })
+    console.log("Form submitted", pycmd)
+    
+
+
+
+    const fetchData = async (userName: string, projectName: string) => {
+      try {
+        const response = await axios.get('http://143.89.22.7:3001/api/getresultdata', {
+          params: {
+            userName,
+            projectName
+          }
+        });
+        if (response.data) {
+          console.log('Valid data received:', response.data);
+          projectData[projectData.length - 1].annualTotalLoss = Number(response.data.annualTotalLoss);
+          projectData[projectData.length - 1].standDerivation = Number(response.data.standDerivation);
+          projectData[projectData.length - 1].status = "Completed";
+
+          console.log('Project data:', projectData);
+
+          // 将更新的数据发送到后端
+          axios.post('http://143.89.22.7:3001/api/projectData', projectData)
+          .then(response => {
+            console.log('Project data updated:', response.data);
+          })
+          .catch(error => {
+            console.error('Error updating project data:', error);
+          });
+
+          clearInterval(intervalId);
+        } else {
+          console.log('No valid data yet, retrying...');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const intervalId = setInterval(() => fetchData(userName, projectName), 2000);
+  }
+
+
+
+  const handleCancel = () => {
+    setProjectName("")
+    setRandomYears("1")
+    setStartTime("")
+    setEndTime("")
+    setOutputGranularity("")
+    setAnnualTotalLoss("0")
+    setAnnualMaxLoss("0")
+    setLossPreciseEvent("0")
+  }
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    file = event.target.files?.[0]
+    
+  }
+
+  const handleDownload = async (userName: string, projectName: string) => {
+    try {
+      console.log('Downloading project result:', tempuserName, tempprojectName)
+      if (tempuserName === "none" || tempprojectName === "none") {
+        alert('Please select a project to download.')
+        return
+      }
+      const response = await axios.get('http://143.89.22.7:3001/api/download', {
+        responseType: 'blob', // 确保响应类型为 blob
+        params: {
+          userName:tempuserName,
+          projectName:tempprojectName
+          }
+      })
+
+      // 创建一个 URL 对象并触发下载
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', tempuserName+tempprojectName+'.zip') // 设置下载文件名
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+    } catch (error) {
+      console.error('Error downloading file:', error)
+    }
+  }
+
+  const transformCoordinates = (coordinates, transform) => {
+    if (Array.isArray(coordinates[0])) {
+      return coordinates.map(coord => transformCoordinates(coord, transform));
+    } else {
+      return transform.forward(coordinates);
+    }
+  };
+
+  const handleRowClick = (project) => {
+    setSelectedProjectId(project.id);
+
+    tempuserName = project.userName;
+    tempprojectName = project.id;
+    if (!L) return;
+
+    console.log('Row clicked:', project);
+    if (mapRef.current) {
+      const map = mapRef.current;
+      map.eachLayer((layer) => {
+        if (!(layer instanceof L.TileLayer)) map.removeLayer(layer);
+      });
+
+      if (project.status === "Completed") {
+        // 加载并将shapefile添加到地图
+        axios.get('http:///143.89.22.7:3001/api/download', {
+          responseType: 'arraybuffer',
+          params: {
+            userName: tempuserName,
+            projectName: tempprojectName
+          }
+        })
+        .then(response => JSZip.loadAsync(response.data))
+        .then(zip => {
+          const shpFiles = [];
+          zip.forEach((relativePath, file) => {
+            if (relativePath.endsWith('.shp') || relativePath.endsWith('.shx') || relativePath.endsWith('.dbf')) {
+              shpFiles.push({ name: relativePath, buffer: file.async('arraybuffer') });
+            }
+          });
+          return Promise.all(shpFiles.map(file => file.buffer.then(buffer => ({ name: file.name, buffer }))));
+        })
+        .then(files => {
+          return shp({
+            shp: files.find(file => file.name.endsWith('.shp')).buffer,
+            shx: files.find(file => file.name.endsWith('.shx')).buffer,
+            dbf: files.find(file => file.name.endsWith('.dbf')).buffer
+          });
+        })
+        .then(geojson => {
+          if (geojson && geojson.features && geojson.features.length > 0) {
+            console.log('Shapefile contains data:', geojson.features);
+
+            // // 定义 EPSG:2326 坐标系
+            // proj4.defs("EPSG:2326", "+proj=tmerc +lat_0=22.31213333333333 +lon_0=114.1785555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=GRS80 +units=m +no_defs");
+            // const fromProjection = 'EPSG:2326';
+            // const toProjection = 'EPSG:4326';
+
+            // const transform = proj4(fromProjection, toProjection);
+            // geojson.features.forEach(feature => {
+            //   feature.geometry.coordinates = transformCoordinates(feature.geometry.coordinates, transform);
+            // });
+
+            const onEachFeature = (feature, layer) => {
+              if (feature.properties) {
+                layer.on('click', () => {
+                  const popupContent = Object.entries(feature.properties)
+                    .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
+                    .join('<br />');
+                  layer.bindPopup(popupContent).openPopup();
+                });
+              }
+            };
+
+            const shapefileLayer = L.geoJSON(geojson, {
+              onEachFeature: onEachFeature
+            });
+            console.log('Shapefile layer:', shapefileLayer);
+            shapefileLayer.addTo(map);
+
+            // 调整地图视野范围以确保数据可见
+            const bounds = shapefileLayer.getBounds();
+            map.fitBounds(bounds);
+            
+          } else {
+            console.log('Shapefile does not contain any data.');
+          }
+        })
+        .catch(error => {
+          console.error('Error loading shapefile:', error);
+        });
+      }
+    }
+  };
+
+
+
+  return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-1/4 p-4 bg-gray-100 overflow-auto flex flex-col">
+          <div className="space-y-4 flex-grow">
+            <div className="space-y-2">
+              <Label htmlFor="project-name">1. Project Name</Label>
+              <Input id="project-name" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="random-years">2. Number of Random Years</Label>
+              <Input id="random-years" type="number" value={randomYears} onChange={(e) => setRandomYears(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>3. Analysis Period</Label>
+              <div className="flex space-x-2">
+                <div className="flex-1">
+                  <Label htmlFor="start-time">Start Time</Label>
+                  <Input 
+                    id="start-time" 
+                    type="date" 
+                    value={startTime} 
+                    onChange={(e) => setStartTime(e.target.value)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="end-time">End Time</Label>
+                  <Input 
+                    id="end-time" 
+                    type="date" 
+                    value={endTime} 
+                    onChange={(e) => setEndTime(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {/* <Label>4. Output Granularity</Label> */}
+              {/* <Select onValueChange={setOutputGranularity}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select granularity" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="yearly">Yearly</SelectItem>
+                </SelectContent>
+              </Select> */}
+              <Label>4. User Name</Label>
+              <Input id="project-name" value={userName} onChange={(e) => setUserName(e.target.value)} />
+
+            </div>
+            <div className="space-y-2">
+              <Label>5. Results</Label>
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="annualTotalLoss" checked={annualTotalLoss === "1"} onCheckedChange={(checked) => setAnnualTotalLoss(checked ? "1" : "0")} />
+                  <label htmlFor="annualTotalLoss">Annual Total Loss</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="annualMaxLoss" checked={annualMaxLoss === "1"} onCheckedChange={(checked) => setAnnualMaxLoss(checked ? "1" : "0")} />
+                  <label htmlFor="annualMaxLoss">Annual Maximum Loss</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="lossPreciseEvent" checked={lossPreciseEvent === "1"} onCheckedChange={(checked) => setLossPreciseEvent(checked ? "1" : "0")} />
+                  <label htmlFor="lossPreciseEvent">Event Loss</label>
+                </div>
+              </div>
+            </div>
+            <div className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">File Upload</h2>
+              <Input
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+                className="mb-2"
+                placeholder="Choose file"
+              />
+              {/* <Button className="w-full">
+                <Upload className="mr-2 h-4 w-4" /> Upload File
+              </Button> */}
+            </div>
+            <div className="flex space-x-2 mt-4">
+              {/* <Button variant="outline" onClick={handleCancel}>Cancel</Button> */}
+              <Button onClick={handleSubmit}>Submit</Button>
+            </div>
+
+            {/* <Button onClick={() => handleDownload(userName, projectName)}>
+              <Download className="mr-2 h-4 w-4" /> Download Project Result
+            </Button> */}
+          </div>
+        </div>
+        <div className="w-3/4 p-4 space-y-8 overflow-auto">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Distribution of Insured Properties</CardTitle>
+              <div className="relative w-64">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[500px] w-full rounded-lg overflow-hidden">
+                <MapContainer
+                  ref={mapRef}
+                  center={[22.3193, 114.1694]}
+                  zoom={11}
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={[22.3193, 114.1694]}>
+                    <Popup>Central District - High Risk Zone</Popup>
+                  </Marker>
+                  <Marker position={[22.2783, 114.1747]}>
+                    <Popup>Aberdeen - Flood Risk Area</Popup>
+                  </Marker>
+                  <Marker position={[22.3785, 114.2707]}>
+                    <Popup>Sha Tin - Landslide Risk Zone</Popup>
+                  </Marker>
+                </MapContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+
+          <div className="flex justify-between items-center px-4 py-2">
+          <CardHeader >
+            <CardTitle>Project List</CardTitle>
+          </CardHeader>
+          <Button onClick={() => handleDownload(userName, projectName)} className="flex items-center">
+              <Download className="mr-2 h-4 w-4" /> Download Project Result
+          </Button>
+          </div>
+
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Project ID</TableHead>
+                    <TableHead className="text-xs">User Name</TableHead>
+                    <TableHead className="text-xs">Start Time</TableHead>
+                    <TableHead className="text-xs">End Time</TableHead>
+                    <TableHead className="text-xs">No. of Years</TableHead>
+                    <TableHead className="text-xs">Annual Total Loss</TableHead>
+                    <TableHead className="text-xs">Standard Deviation</TableHead>
+                    <TableHead className="text-xs">Status</TableHead>
+                    
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {projectData.map((project) => (
+                    <TableRow
+                    key={project.id}
+                    onClick={() => handleRowClick(project)}
+                    style={{
+                      backgroundColor: selectedProjectId === project.id ? 'lightblue' : 'transparent',
+                    }}
+                  >
+                      <TableCell>{project.id}</TableCell>
+                      <TableCell>{project.userName}</TableCell>
+                      <TableCell>{project.startTime}</TableCell>
+                      <TableCell>{project.endTime}</TableCell>
+                      <TableCell>{project.years}</TableCell>
+                      <TableCell>{(project.annualTotalLoss).toFixed(2)}</TableCell>
+                      <TableCell>{(project.standDerivation).toFixed(2)}</TableCell>
+                      <ProjectStatusCell project={project} />
+                    </TableRow>
+                  ))}
+                  
+                </TableBody>
+              </Table>
+              <div className="flex justify-between items-center mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm">Page {currentPage} of {totalPages}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="text-right text-sm text-gray-500">
+            {/* Current Time: {currentTime.toLocaleString()} */}
+            Current Time: 
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
