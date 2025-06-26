@@ -364,20 +364,8 @@ export default function Component() {
       <Header />
 
       <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Distribution of Insured Properties</CardTitle>
-              <div className="relative w-64">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
-            </CardHeader>
             <CardContent>
-              <div className="h-[1000px] w-full rounded-lg overflow-hidden">
+              <div className="h-[1180px] w-full rounded-lg overflow-hidden">
                 <MapContainer
                   ref={mapRef}
                   center={[22.3193, 114.1694]}
