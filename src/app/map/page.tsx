@@ -1,8 +1,6 @@
 "use client"
 
 // 1. 导入必要的 React Hooks 和组件
-// - 移除了大量未使用的 hooks (useEffect)、组件 (Table, Input, Calendar, etc.) 和库 (axios, shpjs)。
-// - 仅保留了功能实现所必需的依赖。
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,14 +12,11 @@ import dynamic from 'next/dynamic';
 import "leaflet/dist/leaflet.css";
 
 // 2. 动态导入 (Lazy Load) Leaflet 地图组件
-// - 移除了未使用的 Marker 和 Popup 组件导入。
-// - 确保地图组件仅在客户端渲染 (ssr: false)，这对于 Leaflet 至关重要。
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const WMSTileLayer = dynamic(() => import('react-leaflet').then(mod => mod.WMSTileLayer), { ssr: false });
 
 // 3. WMS 图层配置
-// - 这是地图的核心数据，予以保留。它定义了所有可用的 WMS 图层。
 const wmsLayersConfig = {
   flood500yr: { name: 'Flood depth (500-year return)', layer: 'COP:Flood_Depth _Return_Period_500yr' },
   flood200yr: { name: 'Flood depth (200-year return)', layer: 'COP:Flood_Depth _Return_Period_200yr' },
@@ -33,8 +28,21 @@ const wmsLayersConfig = {
   annualrainfall : { name: 'Annual rainfall', layer: ' COP:taiping_Annual_rainfall' },
 };
 
+// 新增：图例数据
+const legendData = [
+    { color: "#f0f8ff", label: "0.0 - 0.2" },
+    { color: "#d6eaff", label: "0.2 - 0.4" },
+    { color: "#bce0ff", label: "0.4 - 0.6" },
+    { color: "#a2d5ff", label: "0.6 - 0.8" },
+    { color: "#87cefa", label: "0.8 - 1.0" },
+    { color: "#6FB9F4", label: "1.0 - 2.0" },
+    { color: "#3484E5", label: "2.0 - 3.0" },
+    { color: "#0D55B6", label: "3.0 - 4.0" },
+    { color: "#07396A", label: "4.0 - 5.0" },
+    { color: "#08519c", label: "> 5.0" }
+];
+
 // 4. Header 组件
-// - 这是一个独立的、被使用的组件，结构保持不变。
 const Header = () => {
   return (
     <header className="bg-white shadow-md">
@@ -70,16 +78,33 @@ const Header = () => {
   );
 }
 
+// 新增：图例组件
+const Legend = () => {
+  return (
+    <div className="absolute bottom-4 left-4 z-[1000] bg-white p-4 rounded-lg shadow-lg border">
+      <h3 className="text-lg font-semibold mb-2">Legend (m)</h3>
+      <div className="flex flex-col space-y-1">
+        {legendData.map(({ color, label }) => (
+          <div key={label} className="flex items-center space-x-3">
+            <div 
+              className="w-5 h-5 border border-gray-400" 
+              style={{ backgroundColor: color }}
+            ></div>
+            <span className="text-sm">{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
 // 5. 主组件
 export default function Component() {
-  // 6. 移除未使用的 State 和 Ref
-  // - 删除了所有与表单、数据提交、项目列表、文件处理相关的 state。
-  // - 仅保留了 mapRef (通常用于地图交互，保留是个好习惯) 和 visibleLayers (用于控制图层可见性)。
   const mapRef = useRef(null);
   
-  // - 优化：为所有图层提供明确的初始可见性状态，避免潜在的 bug。
   const [visibleLayers, setVisibleLayers] = useState({
-    flood500yr: true, // 默认显示 500年一遇的洪水图层
+    flood500yr: true,
     flood200yr: false,
     flood100yr: false,
     flood50yr: false,
@@ -89,12 +114,6 @@ export default function Component() {
     annualrainfall: false,
   });
 
-  // 7. 移除未使用的函数和 useEffect
-  // - 删除了 handleSubmit, handleCancel, handleFileUpload, handleDownload, handleRowClick 等所有未被调用的函数。
-  // - 删除了用于获取项目数据和加载 shapefile 的 useEffect，因为它依赖于已被移除的功能。
-
-  // 8. 保留图层切换逻辑
-  // - 这是当前组件核心的交互功能，用于响应用户的勾选操作。
   const handleLayerToggle = (layerKey: string) => {
     setVisibleLayers(prev => ({
       ...prev,
@@ -102,16 +121,13 @@ export default function Component() {
     }));
   };
 
-  // 9. 简化并优化 JSX
-  // - 保持了 Header + 包含地图和图层控制的 Card 的整体布局。
-  // - 优化地图容器高度：使用 `calc(100vh - ...)` 使其能自适应屏幕，避免不必要的滚动。
   return (
     <div className="flex flex-col h-screen">
       <Header />
 
       <Card>
-        <CardContent className="p-0"> {/* 移除 CardContent 的默认内边距 */}
-          <div className="relative h-[calc(100vh-68px)] w-full"> {/* 假设 Header 高度约为 68px */}
+        <CardContent className="p-0">
+          <div className="relative h-[calc(100vh-68px)] w-full">
             
             <div className="absolute top-4 right-4 z-[1000] bg-white p-4 rounded-lg shadow-lg border max-h-[90vh] overflow-y-auto">
               <h3 className="text-lg font-semibold mb-2">Layer Control</h3>
@@ -120,7 +136,7 @@ export default function Component() {
                   <div key={key} className="flex items-center space-x-2">
                     <Checkbox
                       id={key}
-                      checked={!!visibleLayers[key]} // 使用 !! 确保值总是布尔型
+                      checked={!!visibleLayers[key]}
                       onCheckedChange={() => handleLayerToggle(key)}
                     />
                     <Label htmlFor={key} className="text-sm font-medium leading-none">
@@ -131,9 +147,12 @@ export default function Component() {
               </div>
             </div>
 
+            {/* 在此处添加图例组件 */}
+            <Legend />
+
             <MapContainer
               ref={mapRef}
-              center={[22.3193, 114.1694]} // 香港中心坐标
+              center={[22.3193, 114.1694]}
               zoom={11}
               style={{ height: "100%", width: "100%" }}
             >
@@ -142,9 +161,8 @@ export default function Component() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               
-              {/* 根据 visibleLayers 状态条件性地渲染 WMS 图层 */}
               {Object.entries(visibleLayers).map(([key, isVisible]) => 
-                isVisible && wmsLayersConfig[key] && ( // 增加 wmsLayersConfig[key] 检查，更安全
+                isVisible && wmsLayersConfig[key] && (
                   <WMSTileLayer
                     key={key}
                     url="http://143.89.22.7:8090/geoserver/wms"
