@@ -72,6 +72,11 @@ const Header = () => {
                 <Button variant="ghost">Map</Button>
               </Link>
             </li>
+            <li>
+              <Link href="/earth">
+                <Button variant="ghost">Earth</Button>
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
