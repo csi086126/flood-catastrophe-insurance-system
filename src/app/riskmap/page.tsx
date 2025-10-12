@@ -107,20 +107,24 @@ export default function Component() {
     flood50yr: false,
     flood20yr: false,
     buildingRisk: false,
-    boundary: false, // Set boundary to be visible by default
+    boundary: false, 
     annualrainfall: false,
   });
 
-  // State for the risk map options from the left sidebar
   const [riskMapOptions, setRiskMapOptions] = useState({
     typhoon: false,
     rainstorm: false,
-    flood: true, // Set flood to be selected by default
+    flood: true, 
     geological: false,
     population: false,
     buildingCost: false,
     infrastructure: false,
   });
+
+  // State for location search and report
+  const [searchQuery, setSearchQuery] = useState('');
+  const [riskReportData, setRiskReportData] = useState(null);
+
 
   const handleLayerToggle = (layerKey) => {
     setVisibleLayers(prev => ({
@@ -133,7 +137,61 @@ export default function Component() {
     setRiskMapOptions(prev => ({ ...prev, [optionKey]: !prev[optionKey] }));
   };
   
-  // Check if any risk option is selected to conditionally render content in the right sidebar
+  // Handler for querying risk by location
+  const handleRiskQuery = () => {
+    if (!searchQuery) {
+      alert("Please enter an address or coordinates.");
+      setRiskReportData(null); // Clear previous results if query is empty
+      return;
+    }
+    // In a real application, you would call a geocoding API and then your risk analysis API.
+    // Here, we simulate this process by generating dummy data.
+    console.log(`Querying risk for: ${searchQuery}`);
+    const dummyData = {
+      address: searchQuery.includes(',') ? `Near coordinates ${searchQuery}` : searchQuery,
+      floodRisk100yr: 'Medium (Projected inundation depth 0.5m)',
+      typhoonRisk: 'High (Located on historical typhoon path)',
+      geologicalRisk: 'Low',
+      overallRisk: 'High',
+      timestamp: new Date().toISOString(),
+    };
+    setRiskReportData(dummyData);
+  };
+
+  // Handler for downloading the risk report
+  const handleDownloadReport = () => {
+    if (!riskReportData) return;
+
+    // Format the report data into a string for the .txt file
+    const reportContent = `
+Risk Analysis Report
+================================
+Queried Location: ${riskReportData.address}
+Report Generation Time: ${riskReportData.timestamp}
+--------------------------------
+Flood Risk (100-year return): ${riskReportData.floodRisk100yr}
+Typhoon Risk: ${riskReportData.typhoonRisk}
+Geological Risk: ${riskReportData.geologicalRisk}
+--------------------------------
+Overall Risk Rating: ${riskReportData.overallRisk}
+    `;
+
+    // Create a Blob from the report content
+    const blob = new Blob([reportContent.trim()], { type: 'text/plain;charset=utf-8' });
+
+    // Create a temporary link element to trigger the download
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const fileName = `Risk_Report_${new Date().getTime()}.txt`;
+    link.download = fileName;
+
+    // Append to the document, click, and then remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
   const isAnyRiskOptionSelected = Object.values(riskMapOptions).some(option => option);
 
   return (
@@ -204,10 +262,53 @@ export default function Component() {
           </MapContainer>
         </main>
 
-        {/* --- NEW: Right Sidebar for Risk Map Details --- */}
+        {/* --- Right Sidebar --- */}
         <aside className="w-80 flex-shrink-0 border-l bg-white p-4 overflow-y-auto space-y-4">
           <h2 className="text-xl font-bold mb-2 pl-2">Risk Analysis</h2>
 
+          {/* --- Location Risk Query Card --- */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Query Risk by Location</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="location-search">Address or Coordinates (lat,lon)</Label>
+                <Input
+                  id="location-search"
+                  placeholder="e.g., 8 Finance St, Central, HK or 22.28,114.15"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRiskQuery()}
+                />
+              </div>
+              <Button className="w-full" onClick={handleRiskQuery}>Query Risk</Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleDownloadReport}
+                disabled={!riskReportData}
+              >
+                Download Report
+              </Button>
+
+              {/* --- Display area for query results --- */}
+              {riskReportData && (
+                <div className="mt-4 p-3 border rounded-md bg-gray-50 text-sm space-y-1">
+                  <h4 className="font-bold mb-2 text-base">Risk Report Summary</h4>
+                  <p><strong>Address:</strong> {riskReportData.address}</p>
+                  <p><strong>Flood Risk (100-year return):</strong> {riskReportData.floodRisk100yr}</p>
+                  <p><strong>Typhoon Risk:</strong> {riskReportData.typhoonRisk}</p>
+                  <p><strong>Overall Risk Rating:</strong> <span className={`font-bold ${
+                    riskReportData.overallRisk === 'High' ? 'text-red-600' : 
+                    riskReportData.overallRisk === 'Medium' ? 'text-yellow-600' : 'text-green-600'
+                  }`}>{riskReportData.overallRisk}</span></p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Conditionally render other options if a selection is made on the left */}
           {!isAnyRiskOptionSelected ? (
             <div className="flex items-center justify-center h-full">
               <p className="text-center text-gray-500 p-4">Select a hazard or exposure from the left panel to view details and controls.</p>
