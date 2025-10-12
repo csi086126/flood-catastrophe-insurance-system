@@ -61,7 +61,7 @@ const Header = () => {
             width={360}
             height={80}
           />
-          <span className="ml-2 text-xl font-semibold">Flood Catastrophe Insurance System</span>
+          <span className="ml-2 text-xl font-semibold"></span>
         </div>
         <nav className="flex-grow flex justify-end">
           <ul className="flex space-x-4">

@@ -76,7 +76,7 @@ const Login = () => {
           height={53}
         />
         <h1 className="text-2xl font-bold text-center">
-          Flood Catastrophe Insurance System
+          
         </h1>
       </div>
 
