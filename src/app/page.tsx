@@ -16,33 +16,7 @@ const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapCo
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const WMSTileLayer = dynamic(() => import('react-leaflet').then(mod => mod.WMSTileLayer), { ssr: false });
 
-// 3. WMS 图层配置
-const wmsLayersConfig = {
-  flood500yr: { name: 'Flood depth (500-year return)', layer: 'COP:Flood_Depth _Return_Period_500yr' },
-  flood200yr: { name: 'Flood depth (200-year return)', layer: 'COP:Flood_Depth _Return_Period_200yr' },
-  flood100yr: { name: 'Flood depth (100-year return)', layer: 'COP:Flood_Depth _Return_Period_100yr' },
-  flood50yr: { name: 'Flood depth (50-year return)', layer: 'COP:Flood_Depth _Return_Period_50yr' },
-  flood20yr: { name: 'Flood depth (20-year return)', layer: 'COP:Flood_Depth _Return_Period_20yr' },
-  buildingRisk: { name: 'Building', layer: 'COP:Building' },
-  boundary : { name: 'Administrative boundary', layer: ' COP:taiping_boundary' },
-  annualrainfall : { name: 'Annual rainfall', layer: ' COP:taiping_Annual_rainfall' },
-};
-
-// 4. 图例数据
-const legendData = [
-    { color: "#f0f8ff", label: "0.0 - 0.2" },
-    { color: "#d6eaff", label: "0.2 - 0.4" },
-    { color: "#bce0ff", label: "0.4 - 0.6" },
-    { color: "#a2d5ff", label: "0.6 - 0.8" },
-    { color: "#87cefa", label: "0.8 - 1.0" },
-    { color: "#6FB9F4", label: "1.0 - 2.0" },
-    { color: "#3484E5", label: "2.0 - 3.0" },
-    { color: "#0D55B6", label: "3.0 - 4.0" },
-    { color: "#07396A", label: "4.0 - 5.0" },
-    { color: "#08519c", label: "> 5.0" }
-];
-
-// 5. Header 组件
+// 3. Header 组件
 const Header = () => {
   return (
     <header className="bg-white shadow-md z-20">
@@ -73,50 +47,23 @@ const Header = () => {
   );
 }
 
-// 6. 图例组件
-const Legend = () => {
-  return (
-    <div className="absolute bottom-4 left-4 z-[1000] bg-white p-4 rounded-lg shadow-lg border">
-      <h3 className="text-lg font-semibold mb-2">Legend (m)</h3>
-      <div className="flex flex-col space-y-1">
-        {legendData.map(({ color, label }) => (
-          <div key={label} className="flex items-center space-x-3">
-            <div 
-              className="w-5 h-5 border border-gray-400" 
-              style={{ backgroundColor: color }}
-            ></div>
-            <span className="text-sm">{label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-
-// 7. 主组件
+// 4. 主组件
 export default function Component() {
   const mapRef = useRef(null);
   
-  const [visibleLayers, setVisibleLayers] = useState({
-    flood500yr: true,
-    flood200yr: false,
-    flood100yr: false,
-    flood50yr: false,
-    flood20yr: false,
-    buildingRisk: false,
-    boundary: false,
-    annualrainfall: false,
-  });
-
+  // 城市空间元素的状态管理 (已整合新的图层)
   const [urbanElements, setUrbanElements] = useState({
     topography: false,
     geomorphology: false,
-    riverNetwork: true, 
-    buildingInfo: false,
-    roadsAndStreets: true, 
+    riverNetwork: false, 
+    boundary: false, // 新增: 行政边界
+    annualrainfall: false, // 新增: 年降雨量
+    buildingRisk: false, // 修改: 替换 buildingInfo
+    roadsAndStreets: false, 
     landUse: false,
-    drainageNetwork: true, 
+    drainageConduits: true, 
+    drainageJunctions: false,
+    drainageOutfalls: false,
     reservoirRegulation: false,
     defensiveEmbankments: false,
     populationDensity: false,
@@ -128,13 +75,7 @@ export default function Component() {
 
   const [selectedCity, setSelectedCity] = useState('');
 
-  const handleLayerToggle = (layerKey: string) => {
-    setVisibleLayers(prev => ({
-      ...prev,
-      [layerKey]: !prev[layerKey]
-    }));
-  };
-
+  // 处理左侧复选框的点击事件
   const handleElementToggle = (elementKey: keyof typeof urbanElements) => {
     setUrbanElements(prev => ({
       ...prev,
@@ -190,6 +131,15 @@ export default function Component() {
                 <Checkbox id="riverNetwork" checked={urbanElements.riverNetwork} onCheckedChange={() => handleElementToggle('riverNetwork')} />
                 <Label htmlFor="riverNetwork" className="font-normal">River Network</Label>
               </div>
+              {/* --- 新增的复选框 --- */}
+              <div className="flex items-center space-x-2">
+                <Checkbox id="boundary" checked={urbanElements.boundary} onCheckedChange={() => handleElementToggle('boundary')} />
+                <Label htmlFor="boundary" className="font-normal">Administrative boundary</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="annualrainfall" checked={urbanElements.annualrainfall} onCheckedChange={() => handleElementToggle('annualrainfall')} />
+                <Label htmlFor="annualrainfall" className="font-normal">Annual rainfall</Label>
+              </div>
             </CardContent>
           </Card>
 
@@ -198,9 +148,10 @@ export default function Component() {
               <CardTitle className="text-base">Infrastructure</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
+              {/* --- 修改后的 Building 复选框 --- */}
               <div className="flex items-center space-x-2">
-                <Checkbox id="buildingInfo" checked={urbanElements.buildingInfo} onCheckedChange={() => handleElementToggle('buildingInfo')} />
-                <Label htmlFor="buildingInfo" className="font-normal">Building Information</Label>
+                <Checkbox id="buildingRisk" checked={urbanElements.buildingRisk} onCheckedChange={() => handleElementToggle('buildingRisk')} />
+                <Label htmlFor="buildingRisk" className="font-normal">Building</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="roadsAndStreets" checked={urbanElements.roadsAndStreets} onCheckedChange={() => handleElementToggle('roadsAndStreets')} />
@@ -211,8 +162,16 @@ export default function Component() {
                 <Label htmlFor="landUse" className="font-normal">Land Use</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <Checkbox id="drainageNetwork" checked={urbanElements.drainageNetwork} onCheckedChange={() => handleElementToggle('drainageNetwork')} />
-                <Label htmlFor="drainageNetwork" className="font-normal">Drainage Network</Label>
+                <Checkbox id="drainageConduits" checked={urbanElements.drainageConduits} onCheckedChange={() => handleElementToggle('drainageConduits')} />
+                <Label htmlFor="drainageConduits" className="font-normal">Drainage Conduits</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="drainageJunctions" checked={urbanElements.drainageJunctions} onCheckedChange={() => handleElementToggle('drainageJunctions')} />
+                <Label htmlFor="drainageJunctions" className="font-normal">Drainage Junctions</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="drainageOutfalls" checked={urbanElements.drainageOutfalls} onCheckedChange={() => handleElementToggle('drainageOutfalls')} />
+                <Label htmlFor="drainageOutfalls" className="font-normal">Drainage Outfalls</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="reservoirRegulation" checked={urbanElements.reservoirRegulation} onCheckedChange={() => handleElementToggle('reservoirRegulation')} />
@@ -256,24 +215,6 @@ export default function Component() {
 
         {/* 中间地图区域 */}
         <main className="flex-1 relative">
-          <div className="absolute top-4 right-4 z-[1000] bg-white p-4 rounded-lg shadow-lg border max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-2">Layer Control</h3>
-            <div className="flex flex-col space-y-2">
-              {Object.entries(wmsLayersConfig).map(([key, { name }]) => (
-                <div key={key} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={key}
-                    checked={!!visibleLayers[key]}
-                    onCheckedChange={() => handleLayerToggle(key)}
-                  />
-                  <Label htmlFor={key} className="text-sm font-medium leading-none">
-                    {name}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
-          <Legend />
           <MapContainer
             ref={mapRef}
             center={[22.3193, 114.1694]}
@@ -285,21 +226,90 @@ export default function Component() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {Object.entries(visibleLayers).map(([key, isVisible]) => 
-              isVisible && wmsLayersConfig[key] && (
-                <WMSTileLayer
-                  key={key}
-                  url="http://143.89.22.7:8090/geoserver/wms"
-                  params={{
-                    layers: wmsLayersConfig[key].layer,
-                    format: 'image/png',
-                    transparent: true,
-                    version: '1.1.0'
-                  }}
-                  attribution="GeoServer Data"
-                />
-              )
+            
+            {/* --- 新增的 WMS 图层 --- */}
+            {urbanElements.buildingRisk && (
+              <WMSTileLayer
+                key="buildingRisk"
+                url="http://143.89.22.7:8090/geoserver/wms"
+                params={{ layers: 'COP:Building', format: 'image/png', transparent: true, version: '1.1.0' }}
+                attribution="GeoServer Data"
+              />
             )}
+            {urbanElements.boundary && (
+              <WMSTileLayer
+                key="boundary"
+                url="http://143.89.22.7:8090/geoserver/wms"
+                params={{ layers: 'COP:taiping_boundary', format: 'image/png', transparent: true, version: '1.1.0' }}
+                attribution="GeoServer Data"
+              />
+            )}
+            {urbanElements.annualrainfall && (
+              <WMSTileLayer
+                key="annualrainfall"
+                url="http://143.89.22.7:8090/geoserver/wms"
+                params={{ layers: 'COP:taiping_Annual_rainfall', format: 'image/png', transparent: true, version: '1.1.0' }}
+                attribution="GeoServer Data"
+              />
+            )}
+
+            {/* --- 原有的 WMS 图层 --- */}
+            {urbanElements.drainageConduits && (
+              <WMSTileLayer
+                key="conduits"
+                url="http://143.89.23.123:8080/geoserver/wms"
+                params={{
+                  layers: 'ITF:Conduits',
+                  format: 'image/png',
+                  transparent: true,
+                  version: '1.1.0'
+                }}
+                attribution="GeoServer Data"
+              />
+            )}
+            
+            {urbanElements.drainageJunctions && (
+              <WMSTileLayer
+                key="junctions"
+                url="http://143.89.23.123:8080/geoserver/wms"
+                params={{
+                  layers: 'ITF:Junctions', 
+                  format: 'image/png',
+                  transparent: true,
+                  version: '1.1.0'
+                }}
+                attribution="GeoServer Data"
+              />
+            )}
+            
+            {urbanElements.drainageOutfalls && (
+              <WMSTileLayer
+                key="outfalls"
+                url="http://143.89.23.123:8080/geoserver/wms"
+                params={{
+                  layers: 'ITF:Outfalls', 
+                  format: 'image/png',
+                  transparent: true,
+                  version: '1.1.0'
+                }}
+                attribution="GeoServer Data"
+              />
+            )}
+            
+            {urbanElements.populationDensity && (
+              <WMSTileLayer
+                key="populationDensity"
+                url="http://143.89.23.123:8080/geoserver/wms"
+                params={{
+                  layers: 'ITF:PopulationDensity_per_30_arcseconds',
+                  format: 'image/png',
+                  transparent: true,
+                  version: '1.1.0'
+                }}
+                attribution="GeoServer Data"
+              />
+            )}
+
           </MapContainer>
         </main>
 
@@ -333,7 +343,6 @@ export default function Component() {
             </CardContent>
           </Card>
 
-          {/* --- 更改开始: Analysis Chart 卡片 (结构已修复) --- */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Analysis Chart</CardTitle>
@@ -342,22 +351,15 @@ export default function Component() {
               <div className="h-48 flex flex-col">
                 <p className="text-center text-sm font-medium text-gray-600">Risk Distribution by Asset Type</p>
                 
-                {/* 条形图容器 (父容器有明确高度，所以百分比高度会生效) */}
                 <div className="flex-grow flex items-end justify-around px-2 pt-2 pb-1">
-                  {/* Bar 1: Residential */}
                   <div className="w-8 bg-blue-400 rounded-t-sm" style={{ height: '60%' }} title="Residential: 60%"></div>
-                  {/* Bar 2: Commercial */}
                   <div className="w-8 bg-red-400 rounded-t-sm" style={{ height: '85%' }} title="Commercial: 85%"></div>
-                  {/* Bar 3: Industrial */}
                   <div className="w-8 bg-yellow-400 rounded-t-sm" style={{ height: '40%' }} title="Industrial: 40%"></div>
-                  {/* Bar 4: Infrastructure */}
                   <div className="w-8 bg-green-400 rounded-t-sm" style={{ height: '70%' }} title="Infrastructure: 70%"></div>
                 </div>
 
-                {/* X-axis line */}
                 <div className="border-t border-gray-300 mx-2"></div>
 
-                {/* 标签容器 */}
                 <div className="flex justify-around pt-1">
                   <span className="text-xs w-10 text-center">Res.</span>
                   <span className="text-xs w-10 text-center">Com.</span>
@@ -367,7 +369,6 @@ export default function Component() {
               </div>
             </CardContent>
           </Card>
-          {/* --- 更改结束: Analysis Chart 卡片 --- */}
 
         </aside>
 

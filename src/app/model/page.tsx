@@ -42,9 +42,9 @@ const Header = () => {
 
 // 3. 带有登录逻辑的 Login 组件
 const Login = () => {
-  // 使用 useState 管理输入值和错误信息
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  // 使用 useState 管理输入值和错误信息，并设置默认值
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('123');
   const [error, setError] = useState('');
 
   // 获取 router 实例以进行导航
