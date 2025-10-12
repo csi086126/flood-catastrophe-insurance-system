@@ -56,9 +56,10 @@ export default function Component() {
     topography: false,
     geomorphology: false,
     riverNetwork: false, 
-    boundary: false, // 新增: 行政边界
-    annualrainfall: false, // 新增: 年降雨量
-    buildingRisk: false, // 修改: 替换 buildingInfo
+    boundary: false,
+    annualrainfall: false,
+    landCover: false, // 新增: 土地覆盖
+    buildingRisk: false,
     roadsAndStreets: false, 
     landUse: false,
     drainageConduits: true, 
@@ -66,6 +67,7 @@ export default function Component() {
     drainageOutfalls: false,
     reservoirRegulation: false,
     defensiveEmbankments: false,
+    serviceReservoirs: false, // 新增: 服务型水库
     populationDensity: false,
     economicData: false,
     industrialCommercial: false,
@@ -131,7 +133,6 @@ export default function Component() {
                 <Checkbox id="riverNetwork" checked={urbanElements.riverNetwork} onCheckedChange={() => handleElementToggle('riverNetwork')} />
                 <Label htmlFor="riverNetwork" className="font-normal">River Network</Label>
               </div>
-              {/* --- 新增的复选框 --- */}
               <div className="flex items-center space-x-2">
                 <Checkbox id="boundary" checked={urbanElements.boundary} onCheckedChange={() => handleElementToggle('boundary')} />
                 <Label htmlFor="boundary" className="font-normal">Administrative boundary</Label>
@@ -139,6 +140,11 @@ export default function Component() {
               <div className="flex items-center space-x-2">
                 <Checkbox id="annualrainfall" checked={urbanElements.annualrainfall} onCheckedChange={() => handleElementToggle('annualrainfall')} />
                 <Label htmlFor="annualrainfall" className="font-normal">Annual rainfall</Label>
+              </div>
+              {/* --- 新增的复选框 --- */}
+              <div className="flex items-center space-x-2">
+                <Checkbox id="landCover" checked={urbanElements.landCover} onCheckedChange={() => handleElementToggle('landCover')} />
+                <Label htmlFor="landCover" className="font-normal">Land Cover (2019)</Label>
               </div>
             </CardContent>
           </Card>
@@ -148,7 +154,6 @@ export default function Component() {
               <CardTitle className="text-base">Infrastructure</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {/* --- 修改后的 Building 复选框 --- */}
               <div className="flex items-center space-x-2">
                 <Checkbox id="buildingRisk" checked={urbanElements.buildingRisk} onCheckedChange={() => handleElementToggle('buildingRisk')} />
                 <Label htmlFor="buildingRisk" className="font-normal">Building</Label>
@@ -173,13 +178,18 @@ export default function Component() {
                 <Checkbox id="drainageOutfalls" checked={urbanElements.drainageOutfalls} onCheckedChange={() => handleElementToggle('drainageOutfalls')} />
                 <Label htmlFor="drainageOutfalls" className="font-normal">Drainage Outfalls</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <Checkbox id="reservoirRegulation" checked={urbanElements.reservoirRegulation} onCheckedChange={() => handleElementToggle('reservoirRegulation')} />
                 <Label htmlFor="reservoirRegulation" className="font-normal">Reservoir Regulation</Label>
-              </div>
+              </div> */}
               <div className="flex items-center space-x-2">
                 <Checkbox id="defensiveEmbankments" checked={urbanElements.defensiveEmbankments} onCheckedChange={() => handleElementToggle('defensiveEmbankments')} />
                 <Label htmlFor="defensiveEmbankments" className="font-normal">Defensive Embankments</Label>
+              </div>
+              {/* --- 新增的复选框 --- */}
+              <div className="flex items-center space-x-2">
+                <Checkbox id="serviceReservoirs" checked={urbanElements.serviceReservoirs} onCheckedChange={() => handleElementToggle('serviceReservoirs')} />
+                <Label htmlFor="serviceReservoirs" className="font-normal">Service Reservoirs</Label>
               </div>
             </CardContent>
           </Card>
@@ -227,7 +237,6 @@ export default function Component() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {/* --- 新增的 WMS 图层 --- */}
             {urbanElements.buildingRisk && (
               <WMSTileLayer
                 key="buildingRisk"
@@ -253,7 +262,6 @@ export default function Component() {
               />
             )}
 
-            {/* --- 原有的 WMS 图层 --- */}
             {urbanElements.drainageConduits && (
               <WMSTileLayer
                 key="conduits"
@@ -302,6 +310,35 @@ export default function Component() {
                 url="http://143.89.23.123:8080/geoserver/wms"
                 params={{
                   layers: 'ITF:PopulationDensity_per_30_arcseconds',
+                  format: 'image/png',
+                  transparent: true,
+                  version: '1.1.0'
+                }}
+                attribution="GeoServer Data"
+              />
+            )}
+
+            {/* --- 新增的 WMS 图层 --- */}
+            {urbanElements.landCover && (
+              <WMSTileLayer
+                key="landCover"
+                url="http://143.89.23.123:8080/geoserver/wms"
+                params={{
+                  layers: 'ITF:LandCover_ProbaV_2019',
+                  format: 'image/png',
+                  transparent: true,
+                  version: '1.1.0'
+                }}
+                attribution="GeoServer Data"
+              />
+            )}
+
+            {urbanElements.serviceReservoirs && (
+              <WMSTileLayer
+                key="serviceReservoirs"
+                url="http://143.89.23.123:8080/geoserver/wms"
+                params={{
+                  layers: 'ITF:Service_Reservoirs',
                   format: 'image/png',
                   transparent: true,
                   version: '1.1.0'
