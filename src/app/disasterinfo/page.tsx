@@ -93,7 +93,7 @@ const Header = () => {
             <li className="ml-auto"><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
             <li className="ml-auto"><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
             <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            <li><Link href="/"><Button variant="ghost">User centre</Button></Link></li>
+            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
           </ul>
         </nav>
       </div>
@@ -127,7 +127,7 @@ export default function Component() {
   const mapRef = useRef(null);
   
   const [visibleLayers, setVisibleLayers] = useState({
-    flood500yr: true,
+    flood500yr: false,
     flood200yr: false,
     flood100yr: false,
     flood50yr: false,
@@ -260,7 +260,7 @@ export default function Component() {
 
         {/* Central Map Area */}
         <main className="flex-1 relative">
-          <div className="absolute top-4 right-4 z-[1000] bg-white p-4 rounded-lg shadow-lg border max-h-[90vh] overflow-y-auto">
+          {/* <div className="absolute top-4 right-4 z-[1000] bg-white p-4 rounded-lg shadow-lg border max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-2">Layer Control</h3>
             <div className="flex flex-col space-y-2">
               {Object.entries(wmsLayersConfig).map(([key, { name }]) => (
@@ -270,8 +270,8 @@ export default function Component() {
                 </div>
               ))}
             </div>
-          </div>
-          <Legend />
+          </div> */}
+          {/* <Legend /> */}
           <MapContainer ref={mapRef} center={[22.3193, 114.1694]} zoom={11} style={{ height: "100%", width: "100%" }} className="z-10">
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {Object.entries(visibleLayers).map(([key, isVisible]) => 

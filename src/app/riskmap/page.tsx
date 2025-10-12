@@ -67,7 +67,7 @@ const Header = () => {
             <li className="ml-auto"><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
             <li className="ml-auto"><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
             <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            <li><Link href="/"><Button variant="ghost">User centre</Button></Link></li>
+            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
           </ul>
         </nav>
       </div>
@@ -107,7 +107,7 @@ export default function Component() {
     flood50yr: false,
     flood20yr: false,
     buildingRisk: false,
-    boundary: true, // Set boundary to be visible by default
+    boundary: false, // Set boundary to be visible by default
     annualrainfall: false,
   });
 

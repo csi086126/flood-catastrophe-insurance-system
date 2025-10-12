@@ -30,20 +30,6 @@ const wmsLayersConfig = {
   annualrainfall : { name: 'Annual rainfall', layer: ' COP:taiping_Annual_rainfall' },
 };
 
-// 4. Legend Data
-const legendData = [
-    { color: "#f0f8ff", label: "0.0 - 0.2" },
-    { color: "#d6eaff", label: "0.2 - 0.4" },
-    { color: "#bce0ff", label: "0.4 - 0.6" },
-    { color: "#a2d5ff", label: "0.6 - 0.8" },
-    { color: "#87cefa", label: "0.8 - 1.0" },
-    { color: "#6FB9F4", label: "1.0 - 2.0" },
-    { color: "#3484E5", label: "2.0 - 3.0" },
-    { color: "#0D55B6", label: "3.0 - 4.0" },
-    { color: "#07396A", label: "4.0 - 5.0" },
-    { color: "#08519c", label: "> 5.0" }
-];
-
 // --- NEW: MOCK DATA FOR A SELECTED ASSET ---
 const mockAsset = {
   id: 'ASSET-HK-00123',
@@ -86,7 +72,7 @@ const Header = () => {
             <li className="ml-auto"><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
             <li className="ml-auto"><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
             <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            <li><Link href="/"><Button variant="ghost">User centre</Button></Link></li>
+            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
           </ul>
         </nav>
       </div>
@@ -94,33 +80,12 @@ const Header = () => {
   );
 }
 
-// 6. Legend Component
-const Legend = () => {
-  return (
-    <div className="absolute bottom-4 left-4 z-[1000] bg-white p-4 rounded-lg shadow-lg border">
-      <h3 className="text-lg font-semibold mb-2">Legend (m)</h3>
-      <div className="flex flex-col space-y-1">
-        {legendData.map(({ color, label }) => (
-          <div key={label} className="flex items-center space-x-3">
-            <div 
-              className="w-5 h-5 border border-gray-400" 
-              style={{ backgroundColor: color }}
-            ></div>
-            <span className="text-sm">{label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-
-// 7. Main Component
+// 6. Main Component
 export default function Component() {
   const mapRef = useRef(null);
   
   const [visibleLayers, setVisibleLayers] = useState({
-    flood500yr: true,
+    flood500yr: false,
     flood200yr: false,
     flood100yr: false,
     flood50yr: false,
@@ -208,18 +173,6 @@ export default function Component() {
 
         {/* Central Map Area */}
         <main className="flex-1 relative">
-          <div className="absolute top-4 right-4 z-[1000] bg-white p-4 rounded-lg shadow-lg border max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-2">Layer Control</h3>
-            <div className="flex flex-col space-y-2">
-              {Object.entries(wmsLayersConfig).map(([key, { name }]) => (
-                <div key={key} className="flex items-center space-x-2">
-                  <Checkbox id={key} checked={!!visibleLayers[key]} onCheckedChange={() => handleLayerToggle(key)} />
-                  <Label htmlFor={key} className="text-sm font-medium leading-none">{name}</Label>
-                </div>
-              ))}
-            </div>
-          </div>
-          <Legend />
           <MapContainer ref={mapRef} center={[22.3193, 114.1694]} zoom={11} style={{ height: "100%", width: "100%" }} className="z-10">
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {Object.entries(visibleLayers).map(([key, isVisible]) => 

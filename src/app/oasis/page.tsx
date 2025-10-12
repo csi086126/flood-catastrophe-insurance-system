@@ -75,7 +75,7 @@ const Header = () => {
             {/* 假设您想跳转到的地图页面的路由是 "/map" */}
             <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
             {/* 假设您想跳转到的地图页面的路由是 "/map" */}
-            <li><Link href="/"><Button variant="ghost">User centre</Button></Link></li>
+            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
           </ul>
         </nav>
       </div>

@@ -32,7 +32,7 @@ const Header = () => {
             <li className="ml-auto"><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
             <li className="ml-auto"><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
             <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            <li><Link href="/"><Button variant="ghost">User centre</Button></Link></li>
+            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
           </ul>
         </nav>
       </div>
