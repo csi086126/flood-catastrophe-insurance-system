@@ -32,7 +32,6 @@ const Header = () => {
         </div>
         <nav className="flex-grow flex justify-end">
           <ul className="flex space-x-4">
-          
             <li><Link href="/cityinfo"><Button variant="ghost">Urban Spatial Elements</Button></Link></li>
             <li className="ml-auto"><Link href="/disasterinfo"><Button variant="ghost">Disaster event repository</Button></Link></li>
             <li className="ml-auto"><Link href="/riskmap"><Button variant="ghost">Risk map</Button></Link></li>
@@ -92,10 +91,10 @@ export default function Component() {
       <div className="flex flex-1 overflow-hidden">
         
         {/* 左侧边栏 */}
-        <aside className="w-80 flex-shrink-0 border-r bg-white p-4 overflow-y-auto space-y-4">
+        <aside className="w-80 flex-shrink-0 border-r bg-white p-4 overflow-y-auto space-y-2">
           <h2 className="text-xl font-bold text-red-700 mb-2 pl-2">1. Urban Spatial Elements</h2>
 
-          <Card>
+          <Card className="border-0 shadow-none">
             <CardHeader>
               <CardTitle className="text-base">Region Selection</CardTitle>
             </CardHeader>
@@ -116,7 +115,7 @@ export default function Component() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none">
             <CardHeader>
               <CardTitle className="text-base">Basic Geography</CardTitle>
             </CardHeader>
@@ -149,7 +148,7 @@ export default function Component() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none">
             <CardHeader>
               <CardTitle className="text-base">Infrastructure</CardTitle>
             </CardHeader>
@@ -194,7 +193,7 @@ export default function Component() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none">
             <CardHeader>
               <CardTitle className="text-base">Socioeconomic</CardTitle>
             </CardHeader>
@@ -349,65 +348,6 @@ export default function Component() {
 
           </MapContainer>
         </main>
-
-        {/* 右侧边栏 */}
-        <aside className="w-80 flex-shrink-0 border-l bg-white p-4 overflow-y-auto space-y-4">
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-500 mb-4">Initial details for a sample element.</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="font-semibold">ID:</span>
-                  <span>HK-BLD-00781</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-semibold">Type:</span>
-                  <span>Commercial Building</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold">Risk Level:</span>
-                  <span className="text-red-600 font-bold bg-red-100 px-2 py-1 rounded">High</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-semibold">Estimated Loss:</span>
-                  <span className="font-mono">$ 3,500,000</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Analysis Chart</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-48 flex flex-col">
-                <p className="text-center text-sm font-medium text-gray-600">Risk Distribution by Asset Type</p>
-                
-                <div className="flex-grow flex items-end justify-around px-2 pt-2 pb-1">
-                  <div className="w-8 bg-blue-400 rounded-t-sm" style={{ height: '60%' }} title="Residential: 60%"></div>
-                  <div className="w-8 bg-red-400 rounded-t-sm" style={{ height: '85%' }} title="Commercial: 85%"></div>
-                  <div className="w-8 bg-yellow-400 rounded-t-sm" style={{ height: '40%' }} title="Industrial: 40%"></div>
-                  <div className="w-8 bg-green-400 rounded-t-sm" style={{ height: '70%' }} title="Infrastructure: 70%"></div>
-                </div>
-
-                <div className="border-t border-gray-300 mx-2"></div>
-
-                <div className="flex justify-around pt-1">
-                  <span className="text-xs w-10 text-center">Res.</span>
-                  <span className="text-xs w-10 text-center">Com.</span>
-                  <span className="text-xs w-10 text-center">Ind.</span>
-                  <span className="text-xs w-10 text-center">Infra.</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-        </aside>
 
       </div>
     </div>
