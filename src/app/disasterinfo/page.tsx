@@ -2,9 +2,7 @@
 
 // 1. Import necessary React Hooks and components
 import { useState, useRef } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Header from '@/components/Header';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -13,16 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import dynamic from 'next/dynamic';
 import "leaflet/dist/leaflet.css";
-// 导入图标
-import { 
-  Building2, 
-  Database, 
-  Map, 
-  Shield, 
-  BarChart3, 
-  Accessibility, 
-  User 
-} from 'lucide-react';
 
 // 2. Dynamically import (Lazy Load) Leaflet map components
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
@@ -41,6 +29,20 @@ const wmsLayersConfig = {
   annualrainfall : { name: 'Annual rainfall', layer: ' COP:taiping_Annual_rainfall' },
 };
 
+type LayerKey = keyof typeof wmsLayersConfig;
+
+type DisasterEvent = {
+  id: string;
+  name: string;
+  type: string;
+  date: string;
+  maxWindSpeed: string;
+  totalRainfall: string;
+  estimatedLoss: string;
+  affectedPopulation: string;
+  affectedAreas: string[];
+};
+
 // 4. Legend Data
 const legendData = [
     { color: "#f0f8ff", label: "0.0 - 0.2" },
@@ -56,7 +58,7 @@ const legendData = [
 ];
 
 // --- MOCK DATA FOR EVENTS ---
-const mockHistoricalEvents = [
+const mockHistoricalEvents: DisasterEvent[] = [
   {
     id: 'TY2023-Mangkhut',
     name: 'Typhoon Mangkhut',
@@ -80,141 +82,6 @@ const mockHistoricalEvents = [
     affectedAreas: ['Hong Kong Island', 'Kowloon', 'New Territories'],
   },
 ];
-
-// 5. Header Component
-const Header = () => {
-  const pathname = usePathname();
-  const [clickedButton, setClickedButton] = useState<string | null>(null);
-
-  // 判断是否是当前页面
-  const isCurrentPage = (path: string) => pathname === path;
-
-  // 处理按钮点击动画
-  const handleButtonClick = (buttonId: string) => {
-    setClickedButton(buttonId);
-    setTimeout(() => setClickedButton(null), 200); // 200ms后移除动画
-  };
-
-  // 获取按钮样式
-  const getButtonStyle = (path: string, buttonId: string) => {
-    const isActive = isCurrentPage(path);
-    const isClicked = clickedButton === buttonId;
-    
-    return `flex items-center gap-2 transition-all duration-200 ${
-      isActive 
-        ? 'text-blue-600 font-semibold text-base scale-105' 
-        : 'text-gray-700 font-normal text-sm'
-    } ${
-      isClicked 
-        ? 'transform scale-110 animate-bounce' 
-        : 'hover:scale-105'
-    }`;
-  };
-
-  return (
-    <header className="bg-white shadow-md z-20">
-      <div className="mx-auto px-4 py-2 flex justify-between items-center ml-2">
-        <div className="flex items-center">
-          <Image
-            src="/taipinglogo.png"
-            alt="China Taiping Logo"
-            width={360}
-            height={40}
-          />
-          <span className="ml-2 text-xl font-semibold"></span>
-        </div>
-        <nav className="flex-grow flex justify-end">
-          <ul className="flex space-x-4">
-            <li>
-              <Link href="/cityinfo">
-                <Button 
-                  variant="ghost" 
-                  className={getButtonStyle('/cityinfo', 'cityinfo')}
-                  onClick={() => handleButtonClick('cityinfo')}
-                >
-                  <Building2 size={16} />
-                  Urban Spatial Elements
-                </Button>
-              </Link>
-            </li>
-            <li className="ml-auto">
-              <Link href="/disasterinfo">
-                <Button 
-                  variant="ghost" 
-                  className={getButtonStyle('/disasterinfo', 'disasterinfo')}
-                  onClick={() => handleButtonClick('disasterinfo')}
-                >
-                  <Database size={16} />
-                  Disaster event repository
-                </Button>
-              </Link>
-            </li>
-            <li className="ml-auto">
-              <Link href="/riskmap">
-                <Button 
-                  variant="ghost" 
-                  className={getButtonStyle('/riskmap', 'riskmap')}
-                  onClick={() => handleButtonClick('riskmap')}
-                >
-                  <Map size={16} />
-                  Risk map
-                </Button>
-              </Link>
-            </li>
-            <li className="ml-auto">
-              <Link href="/asset">
-                <Button 
-                  variant="ghost" 
-                  className={getButtonStyle('/asset', 'asset')}
-                  onClick={() => handleButtonClick('asset')}
-                >
-                  <Shield size={16} />
-                  Asset management
-                </Button>
-              </Link>
-            </li>
-            <li className="ml-auto">
-              <Link href="/model">
-                <Button 
-                  variant="ghost" 
-                  className={getButtonStyle('/model', 'model')}
-                  onClick={() => handleButtonClick('model')}
-                >
-                  <BarChart3 size={16} />
-                  Catastrophe model
-                </Button>
-              </Link>
-            </li>
-            <li className="ml-auto">
-              <Link href="/fuzhu">
-                <Button 
-                  variant="ghost" 
-                  className={getButtonStyle('/fuzhu', 'fuzhu')}
-                  onClick={() => handleButtonClick('fuzhu')}
-                >
-                  <Accessibility size={16} />
-                  Accessibility
-                </Button>
-              </Link>
-            </li>
-            <li>
-              <Link href="/usercenter">
-                <Button 
-                  variant="ghost" 
-                  className={getButtonStyle('/usercenter', 'usercenter')}
-                  onClick={() => handleButtonClick('usercenter')}
-                >
-                  <User size={16} />
-                  User centre
-                </Button>
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  );
-}
 
 // 6. Legend Component
 const Legend = () => {
@@ -241,7 +108,7 @@ const Legend = () => {
 export default function Component() {
   const mapRef = useRef(null);
   
-  const [visibleLayers, setVisibleLayers] = useState({
+  const [visibleLayers, setVisibleLayers] = useState<Record<LayerKey, boolean>>({
     flood500yr: false,
     flood200yr: false,
     flood100yr: false,
@@ -260,9 +127,9 @@ export default function Component() {
   });
 
   // --- NEW STATE: To hold the currently selected event for detail view ---
-  const [selectedEvent, setSelectedEvent] = useState(mockHistoricalEvents[0]);
+  const [selectedEvent, setSelectedEvent] = useState<DisasterEvent | null>(mockHistoricalEvents[0]);
 
-  const handleLayerToggle = (layerKey: string) => {
+  const handleLayerToggle = (layerKey: LayerKey) => {
     setVisibleLayers(prev => ({
       ...prev,
       [layerKey]: !prev[layerKey]
@@ -274,7 +141,7 @@ export default function Component() {
   };
 
   // --- NEW FUNCTION: To update the selected event ---
-  const handleSelectEvent = (event) => {
+  const handleSelectEvent = (event: DisasterEvent) => {
     setSelectedEvent(event);
   };
 
@@ -389,9 +256,19 @@ export default function Component() {
           {/* <Legend /> */}
           <MapContainer ref={mapRef} center={[22.3193, 114.1694]} zoom={11} style={{ height: "100%", width: "100%" }} className="z-10">
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {Object.entries(visibleLayers).map(([key, isVisible]) => 
+            {(Object.entries(visibleLayers) as [LayerKey, boolean][])?.map(([key, isVisible]) => 
               isVisible && wmsLayersConfig[key] && (
-                <WMSTileLayer key={key} url="http://143.89.22.7:8090/geoserver/wms" params={{ layers: wmsLayersConfig[key].layer, format: 'image/png', transparent: true, version: '1.1.0' }} attribution="GeoServer Data" />
+                <WMSTileLayer 
+                  key={key} 
+                  url="http://143.89.22.7:8090/geoserver/wms" 
+                  params={{ 
+                    layers: wmsLayersConfig[key].layer, 
+                    format: 'image/png', 
+                    transparent: true, 
+                    version: '1.1.0' 
+                  }} 
+                  attribution="GeoServer Data" 
+                />
               )
             )}
           </MapContainer>

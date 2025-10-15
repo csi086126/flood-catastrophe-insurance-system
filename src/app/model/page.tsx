@@ -101,8 +101,11 @@ const Login = () => {
 // 4. 主组件，渲染登录页面
 export default function Component() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <Login />
+    <div className="bg-gray-50 min-h-screen">
+      <Header />
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
+        <Login />
+      </div>
     </div>
   );
 }

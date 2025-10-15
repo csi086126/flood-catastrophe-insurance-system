@@ -24,6 +24,7 @@ import ProjectStatusCell from '../ProjectStatusCell'
 import JSZip from 'jszip';
 import shp from 'shpjs';
 import Link from 'next/link';
+import Header from '@/components/Header';
 
 // import L from 'leaflet'
 
@@ -45,43 +46,7 @@ var tempuserName = "none";
 var tempprojectName = "none";
 
 
-const Header = () => {
-  return (
-    <header className="bg-white shadow-md">
-      <div className=" mx-auto px-4 py-2 flex justify-between items-center ml-2">
-        <div className="flex items-center">
-          <Image
-            src="/taipinglogo.png"
-            alt="China Taiping Logo"
-            width={360}
-            height={40}
-          />
-          <span className="ml-2 text-xl font-semibold"></span>
-        </div>
-        <nav className="flex-grow flex justify-end">
-          <ul className="flex space-x-4">
-            {/* 假设主页路由是 "/" */}
-            
-            {/* 假设风险分析页路由是 "/risk-analysis" */}
-            <li><Link href="/cityinfo"><Button variant="ghost">Urban Spatial Elements</Button></Link></li>
-            {/* 假设风险统计页路由是 "/risk-statistics" */}
-            <li className="ml-auto"><Link href="/disasterinfo"><Button variant="ghost">Disaster event repository</Button></Link></li>
-            {/* 假设您想跳转到的地图页面的路由是 "/map" */}
-            <li className="ml-auto"><Link href="/riskmap"><Button variant="ghost">Risk map</Button></Link></li>
-            {/* 假设您想跳转到的地图页面的路由是 "/map" */}
-            <li className="ml-auto"><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
-            {/* 假设您想跳转到的地图页面的路由是 "/map" */}
-            <li className="ml-auto"><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
-            {/* 假设您想跳转到的地图页面的路由是 "/map" */}
-            <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            {/* 假设您想跳转到的地图页面的路由是 "/map" */}
-            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  )
-}
+// Use shared Header
 
 export default function Component() {
   const [projectName, setProjectName] = useState("")

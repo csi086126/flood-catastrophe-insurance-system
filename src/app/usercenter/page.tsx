@@ -1,40 +1,11 @@
 "use client"
 
 // 1. 导入所需的 Hooks 和组件
-import Image from 'next/image';
-import Link from 'next/link';
 import { Button } from "@/components/ui/button"; // 假设这是来自 shadcn/ui 的按钮
+import Header from '@/components/Header';
 import { useState } from 'react';
 
-// 2. Header 组件 (保持不变)
-const Header = () => {
-  return (
-    <header className="bg-white shadow-md z-20 sticky top-0">
-      <div className="mx-auto px-4 py-2 flex justify-between items-center ml-2">
-        <div className="flex items-center">
-          <Image
-            src="/taipinglogo.png"
-            alt="China Taiping Logo"
-            width={360}
-            height={40}
-          />
-          <span className="ml-2 text-xl font-semibold"></span>
-        </div>
-        <nav className="flex-grow flex justify-end">
-          <ul className="flex space-x-4">
-            <li><Link href="/cityinfo"><Button variant="ghost">Urban Spatial Elements</Button></Link></li>
-            <li><Link href="/disasterinfo"><Button variant="ghost">Disaster event repository</Button></Link></li>
-            <li><Link href="/riskmap"><Button variant="ghost">Risk map</Button></Link></li>
-            <li><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
-            <li><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
-            <li><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  );
-}
+// Use shared Header
 
 // 3. SVG 图标组件 (用于用户中心页面)
 // 为了代码自包含，将 SVG 图标直接定义为组件
@@ -87,6 +58,7 @@ const UserCenterPage = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
+      <Header />
       <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">User Center</h1>
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-5">

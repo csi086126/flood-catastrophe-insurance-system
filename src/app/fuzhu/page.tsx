@@ -2,10 +2,8 @@
 
 // 1. Import necessary React Hooks and components
 import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import Header from '@/components/Header';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,37 +23,7 @@ const mockWarning = {
 };
 
 
-// 3. Header Component
-// - This component remains unchanged and provides top-level navigation.
-const Header = () => {
-  return (
-    <header className="bg-white shadow-md z-20">
-      <div className="mx-auto px-4 py-2 flex justify-between items-center ml-2">
-        <div className="flex items-center">
-          <Image
-            src="/taipinglogo.png"
-            alt="China Taiping Logo"
-            width={360}
-            height={40}
-          />
-          <span className="ml-2 text-xl font-semibold"></span>
-        </div>
-        <nav className="flex-grow flex justify-end">
-          <ul className="flex space-x-4">
-          
-            <li><Link href="/cityinfo"><Button variant="ghost">Urban Spatial Elements</Button></Link></li>
-            <li className="ml-auto"><Link href="/disasterinfo"><Button variant="ghost">Disaster event repository</Button></Link></li>
-            <li className="ml-auto"><Link href="/riskmap"><Button variant="ghost">Risk map</Button></Link></li>
-            <li className="ml-auto"><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
-            <li className="ml-auto"><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
-            <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  );
-}
+// 3. Use shared Header
 
 // 4. Main Component
 // - The right sidebar has been updated to show warning message details.

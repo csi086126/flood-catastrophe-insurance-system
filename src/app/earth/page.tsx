@@ -2,46 +2,11 @@
 
 // 1. 导入必要的组件
 // - 仅保留了 Header 和 iframe 实现所必需的依赖。
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from "@/components/ui/button";
+import Header from '@/components/Header';
 
 // 2. Header 组件
 // - 保持不变，提供网站导航。
-const Header = () => {
-  return (
-    <header className="bg-white shadow-md z-10"> {/* 添加 z-10 确保 Header 在 iframe 之上 */}
-      <div className="mx-auto px-4 py-2 flex justify-between items-center ml-2">
-        <div className="flex items-center">
-          <Image
-            src="/taipinglogo.png"
-            alt="China Taiping Logo"
-            width={180}
-            height={40}
-          />
-          <span className="ml-2 text-xl font-semibold">Flood Catastrophe Insurance System</span>
-        </div>
-        <nav className="flex-grow flex justify-end">
-          <ul className="flex space-x-4">
-            <li><Link href="/"><Button variant="ghost">Home</Button></Link></li>
-            <li><Link href="/risk-analysis"><Button variant="ghost">Risk Analysis</Button></Link></li>
-            <li className="ml-auto"><Link href="/risk-statistics"><Button variant="ghost">Risk Statistics</Button></Link></li>
-            <li>
-              <Link href="/map">
-                <Button variant="ghost">Map</Button>
-              </Link>
-            </li>
-            <li>
-              <Link href="/earth">
-                <Button variant="ghost">Earth</Button>
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  );
-}
+// Use shared Header
 
 // 3. 主组件
 // - 将 earth.nullschool.net 通过 iframe 嵌入页面。
