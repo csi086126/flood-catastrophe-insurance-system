@@ -10,6 +10,16 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import dynamic from 'next/dynamic';
 import "leaflet/dist/leaflet.css";
+// 导入图标
+import { 
+  Building2, 
+  Database, 
+  Map, 
+  Shield, 
+  BarChart3, 
+  Accessibility, 
+  User 
+} from 'lucide-react';
 
 // 2. 动态导入 (Lazy Load) Leaflet 地图组件
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
@@ -32,13 +42,62 @@ const Header = () => {
         </div>
         <nav className="flex-grow flex justify-end">
           <ul className="flex space-x-4">
-            <li><Link href="/cityinfo"><Button variant="ghost">Urban Spatial Elements</Button></Link></li>
-            <li className="ml-auto"><Link href="/disasterinfo"><Button variant="ghost">Disaster event repository</Button></Link></li>
-            <li className="ml-auto"><Link href="/riskmap"><Button variant="ghost">Risk map</Button></Link></li>
-            <li className="ml-auto"><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
-            <li className="ml-auto"><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
-            <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
+            <li>
+              <Link href="/cityinfo">
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Building2 size={16} />
+                  Urban Spatial Elements
+                </Button>
+              </Link>
+            </li>
+            <li className="ml-auto">
+              <Link href="/disasterinfo">
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Database size={16} />
+                  Disaster event repository
+                </Button>
+              </Link>
+            </li>
+            <li className="ml-auto">
+              <Link href="/riskmap">
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Map size={16} />
+                  Risk map
+                </Button>
+              </Link>
+            </li>
+            <li className="ml-auto">
+              <Link href="/asset">
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Shield size={16} />
+                  Asset management
+                </Button>
+              </Link>
+            </li>
+            <li className="ml-auto">
+              <Link href="/model">
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <BarChart3 size={16} />
+                  Catastrophe model
+                </Button>
+              </Link>
+            </li>
+            <li className="ml-auto">
+              <Link href="/fuzhu">
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Accessibility size={16} />
+                  Accessibility
+                </Button>
+              </Link>
+            </li>
+            <li>
+              <Link href="/usercenter">
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <User size={16} />
+                  User centre
+                </Button>
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
