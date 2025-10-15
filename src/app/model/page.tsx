@@ -3,42 +3,12 @@
 // 1. 导入所需的React组件和库
 import { useState } from 'react'; // 导入 useState Hook
 import { useRouter } from 'next/navigation'; // 导入 useRouter Hook
-import Image from 'next/image';
-import Link from 'next/link';
+import Header from '@/components/Header';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// 2. Header 组件 (保持不变，供登录后使用)
-const Header = () => {
-  return (
-    <header className="bg-white shadow-md z-20">
-      <div className="mx-auto px-4 py-2 flex justify-between items-center ml-2">
-        <div className="flex items-center">
-          <Image
-            src="/taipinglogo.png"
-            alt="China Taiping Logo"
-            width={360}
-            height={40}
-          />
-          <span className="ml-2 text-xl font-semibold">Flood Catastrophe Insurance System</span>
-        </div>
-        <nav className="flex-grow flex justify-end">
-          <ul className="flex space-x-4">
-            
-            <li><Link href="/cityinfo"><Button variant="ghost">Urban Spatial Elements</Button></Link></li>
-            <li className="ml-auto"><Link href="/disasterinfo"><Button variant="ghost">Disaster event repository</Button></Link></li>
-            <li className="ml-auto"><Link href="/riskmap"><Button variant="ghost">Risk map</Button></Link></li>
-            <li className="ml-auto"><Link href="/asset"><Button variant="ghost">Asset management</Button></Link></li>
-            <li className="ml-auto"><Link href="/model"><Button variant="ghost">Catastrophe model</Button></Link></li>
-            <li className="ml-auto"><Link href="/fuzhu"><Button variant="ghost">Accessibility</Button></Link></li>
-            <li><Link href="/usercenter"><Button variant="ghost">User centre</Button></Link></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  );
-}
+// 2. Header 组件 - 现在使用共享组件
 
 // 3. 带有登录逻辑的 Login 组件
 const Login = () => {
